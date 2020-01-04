@@ -43,9 +43,6 @@ export function activate(context: vscode.ExtensionContext) {
 			configurationSection: ['scss'],
 			fileEvents: vscode.workspace.createFileSystemWatcher('**/*.scss')
 		},
-		initializationOptions: {
-			settings: vscode.workspace.getConfiguration('scss')
-		},
 
 		// Don't open the output console (very annoying) in case of error
 		revealOutputChannelOn: RevealOutputChannelOn.Never
