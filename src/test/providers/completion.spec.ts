@@ -5,9 +5,9 @@ import * as assert from 'assert';
 import { CompletionItemKind, CompletionList } from 'vscode-languageserver';
 
 import StorageService from '../../services/storage';
+import SettingsService, { Options } from '../../services/settings';
 import { doCompletion } from '../../providers/completion';
 import * as helpers from '../helpers';
-import { ISettings } from '../../types/settings';
 
 const storage = new StorageService();
 
@@ -30,10 +30,10 @@ storage.set('one.scss', {
 	imports: []
 });
 
-function getCompletionList(lines: string[], options?: Partial<ISettings>): Promise<CompletionList> {
+function getCompletionList(lines: string[], options?: Options): Promise<CompletionList> {
 	const text = lines.join('\n');
 
-	const settings = helpers.makeSettings(options);
+	const settings = new SettingsService(options);
 	const document = helpers.makeDocument(text);
 	const offset = text.indexOf('|');
 

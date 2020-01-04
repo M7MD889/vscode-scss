@@ -2,13 +2,13 @@ import * as path from 'path';
 
 import { TextDocument } from 'vscode-languageserver';
 
-import { ISettings } from '../types/settings';
 import { readFile, fileExists } from '../utils/fs';
 import { parseDocument } from './parser';
 import StorageService from './storage';
+import SettingsService from './settings';
 
 export default class ScannerService {
-	constructor(private readonly _storage: StorageService, private readonly _settings: ISettings) {}
+	constructor(private readonly _storage: StorageService, private readonly _settings: SettingsService) {}
 
 	public async scan(files: string[], recursive = true): Promise<void> {
 		const iterator = new Set(files);

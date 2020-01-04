@@ -9,7 +9,7 @@ import { Stats } from '@nodelib/fs.macchiato';
 
 import StorageService from '../../services/storage';
 import ScannerService from '../../services/scanner';
-import * as helpers from '../helpers';
+import SettingsService from '../../services/settings';
 
 class ScannerServiceTest extends ScannerService {
 	protected _readFile = sinon.stub();
@@ -41,7 +41,7 @@ describe('Services/Scanner', () => {
 			const variablesDocumentPath = path.resolve('variables.scss').toLowerCase();
 
 			const storage = new StorageService();
-			const settings = helpers.makeSettings();
+			const settings = new SettingsService();
 			const scanner = new ScannerServiceTest(storage, settings);
 
 			scanner.fileExistsStub.resolves(true);
@@ -62,7 +62,7 @@ describe('Services/Scanner', () => {
 			const variablesDocumentPath = path.resolve('variables.scss').toLowerCase();
 
 			const storage = new StorageService();
-			const settings = helpers.makeSettings();
+			const settings = new SettingsService();
 			const scanner = new ScannerServiceTest(storage, settings);
 
 			scanner.fileExistsStub.resolves(true);
@@ -79,7 +79,7 @@ describe('Services/Scanner', () => {
 
 		it('should do not find imported files when it not required', async () => {
 			const storage = new StorageService();
-			const settings = helpers.makeSettings({ scanImportedFiles: false });
+			const settings = new SettingsService({ scanImportedFiles: false });
 			const scanner = new ScannerServiceTest(storage, settings);
 
 			scanner.fileExistsStub.resolves(true);
@@ -96,7 +96,7 @@ describe('Services/Scanner', () => {
 
 		it('should do not find imported files when the recursive mode is no required', async () => {
 			const storage = new StorageService();
-			const settings = helpers.makeSettings();
+			const settings = new SettingsService();
 			const scanner = new ScannerServiceTest(storage, settings);
 
 			scanner.fileExistsStub.resolves(true);

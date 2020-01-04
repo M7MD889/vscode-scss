@@ -11,10 +11,9 @@ import {
 	Files
 } from 'vscode-languageserver';
 
-import { ISettings } from './types/settings';
-
 import ScannerService from './services/scanner';
 import StorageService from './services/storage';
+import SettingsService from './services/settings';
 
 import { doCompletion } from './providers/completion';
 import { doHover } from './providers/hover';
@@ -24,7 +23,7 @@ import { searchWorkspaceSymbol } from './providers/workspaceSymbol';
 import { findFiles } from './utils/fs';
 
 let workspaceRoot: string;
-let settings: ISettings;
+let settingsService: SettingsService;
 let storageService: StorageService;
 let scannerService: ScannerService;
 
@@ -47,20 +46,20 @@ documents.listen(connection);
 connection.onInitialize(
 	async (params: InitializeParams): Promise<InitializeResult> => {
 		workspaceRoot = params.rootPath;
-		settings = params.initializationOptions.settings;
+		settingsService = new SettingsService(params.initializationOptions.settings);
 		storageService = new StorageService();
-		scannerService = new ScannerService(storageService, settings);
+		scannerService = new ScannerService(storageService, settingsService);
 
 		const files = await findFiles('**/*.scss', {
 			cwd: params.rootPath,
-			deep: settings.scannerDepth,
-			ignore: settings.scannerExclude
+			deep: settingsService.scannerDepth,
+			ignore: settingsService.scannerExclude
 		});
 
 		try {
 			await scannerService.scan(files);
 		} catch (error) {
-			if (settings.showErrors) {
+			if (settingsService.showErrors) {
 				connection.window.showErrorMessage(error);
 			}
 		}
@@ -81,7 +80,7 @@ connection.onInitialize(
 );
 
 connection.onDidChangeConfiguration(params => {
-	settings = params.settings.scss;
+	settingsService = new SettingsService(params.settings.scss);
 });
 
 connection.onDidChangeWatchedFiles(event => {
@@ -93,7 +92,7 @@ connection.onDidChangeWatchedFiles(event => {
 connection.onCompletion(textDocumentPosition => {
 	const document = documents.get(textDocumentPosition.textDocument.uri);
 	const offset = document.offsetAt(textDocumentPosition.position);
-	return doCompletion(document, offset, settings, storageService);
+	return doCompletion(document, offset, settingsService, storageService);
 });
 
 connection.onHover(textDocumentPosition => {

@@ -3,8 +3,8 @@
 import { CompletionList, CompletionItemKind, TextDocument, Files, CompletionItem } from 'vscode-languageserver';
 
 import { IMixin, ISymbols } from '../types/symbols';
-import { ISettings } from '../types/settings';
 import StorageService from '../services/storage';
+import SettingsService from '../services/settings';
 
 import { parseDocument } from '../services/parser';
 import { getSymbolsRelatedToDocument } from '../utils/symbols';
@@ -70,7 +70,7 @@ function checkFunctionContext(
 	isPropertyValue: boolean,
 	isEmptyValue: boolean,
 	isQuotes: boolean,
-	settings: ISettings
+	settings: SettingsService
 ): boolean {
 	if (isPropertyValue && !isEmptyValue && !isQuotes) {
 		const lastChar = textBeforeWord.substr(-2, 1);
@@ -90,7 +90,7 @@ function isInterpolationContext(text: string): boolean {
 	return text.includes('#{');
 }
 
-function createCompletionContext(document: TextDocument, offset: number, settings: ISettings) {
+function createCompletionContext(document: TextDocument, offset: number, settings: SettingsService) {
 	const currentWord = getCurrentWord(document.getText(), offset);
 	const textBeforeWord = getTextBeforePosition(document.getText(), offset);
 
@@ -121,7 +121,7 @@ function createVariableCompletionItems(
 	symbols: ISymbols[],
 	filepath: string,
 	imports: string[],
-	settings: ISettings
+	settings: SettingsService
 ): CompletionItem[] {
 	const completions: CompletionItem[] = [];
 
@@ -161,7 +161,7 @@ function createMixinCompletionItems(
 	symbols: ISymbols[],
 	filepath: string,
 	imports: string[],
-	settings: ISettings
+	settings: SettingsService
 ): CompletionItem[] {
 	const completions: CompletionItem[] = [];
 
@@ -193,7 +193,7 @@ function createFunctionCompletionItems(
 	symbols: ISymbols[],
 	filepath: string,
 	imports: string[],
-	settings: ISettings
+	settings: SettingsService
 ): CompletionItem[] {
 	const completions: CompletionItem[] = [];
 
@@ -224,7 +224,7 @@ function createFunctionCompletionItems(
 export async function doCompletion(
 	document: TextDocument,
 	offset: number,
-	settings: ISettings,
+	settings: SettingsService,
 	storage: StorageService
 ): Promise<CompletionList> {
 	const completions = CompletionList.create([], false);
