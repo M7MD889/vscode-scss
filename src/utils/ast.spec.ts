@@ -2,12 +2,12 @@
 
 import * as assert from 'assert';
 
-import { NodeType } from '../../types/nodes';
+import { NodeType } from '../types/nodes';
 import {
 	getNodeAtOffset,
 	getParentNodeByType
-} from '../../utils/ast';
-import * as helpers from '../helpers';
+} from './ast';
+import * as helpers from '../test/helpers';
 
 describe('Utils/Ast', () => {
 	it('getNodeAtOffset', () => {

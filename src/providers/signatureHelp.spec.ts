@@ -4,9 +4,9 @@ import * as assert from 'assert';
 
 import { SignatureHelp } from 'vscode-languageserver';
 
-import StorageService from '../../services/storage';
-import { doSignatureHelp } from '../../providers/signatureHelp';
-import * as helpers from '../helpers';
+import StorageService from '../services/storage';
+import { doSignatureHelp } from './signatureHelp';
+import * as helpers from '../test/helpers';
 
 const storage = new StorageService();
 

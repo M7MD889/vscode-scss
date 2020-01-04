@@ -2,8 +2,8 @@
 
 import * as assert from 'assert';
 
-import StorageService from '../../services/storage';
-import { searchWorkspaceSymbol } from '../../providers/workspaceSymbol';
+import StorageService from '../services/storage';
+import { searchWorkspaceSymbol } from './workspaceSymbol';
 
 const storage = new StorageService();
 

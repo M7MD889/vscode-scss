@@ -3,8 +3,8 @@ import * as assert from 'assert';
 import * as sinon from 'sinon';
 import { Position } from 'vscode-languageserver';
 
-import * as ls from '../language-service';
-import { makeDocument } from './helpers';
+import * as ls from './language-service';
+import { makeDocument } from './test/helpers';
 
 describe('LanguageService', () => {
 	describe('.getLanguageService', () => {

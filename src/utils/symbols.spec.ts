@@ -2,8 +2,8 @@
 
 import * as assert from 'assert';
 
-import StorageService from '../../services/storage';
-import { getSymbolsCollection } from '../../utils/symbols';
+import StorageService from '../services/storage';
+import { getSymbolsCollection } from './symbols';
 
 describe('Utils/Symbols', () => {
 	it('getSymbolsCollection', () => {

@@ -4,9 +4,9 @@ import * as assert from 'assert';
 
 import { Files } from 'vscode-languageserver';
 
-import StorageService from '../../services/storage';
-import { goDefinition } from '../../providers/goDefinition';
-import * as helpers from '../helpers';
+import StorageService from '../services/storage';
+import { goDefinition } from './goDefinition';
+import * as helpers from '../test/helpers';
 
 const storage = new StorageService();
 

@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 
-import StorageService from '../../services/storage';
+import StorageService from './storage';
 
 describe('Services → Storage', () => {
 	describe('.set & .get', () => {

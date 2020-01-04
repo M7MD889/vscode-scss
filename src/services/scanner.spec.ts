@@ -7,9 +7,9 @@ import * as fs from 'fs';
 import * as sinon from 'sinon';
 import { Stats } from '@nodelib/fs.macchiato';
 
-import StorageService from '../../services/storage';
-import ScannerService from '../../services/scanner';
-import SettingsService from '../../services/settings';
+import StorageService from './storage';
+import ScannerService from './scanner';
+import SettingsService from './settings';
 
 class ScannerServiceTest extends ScannerService {
 	protected _readFile = sinon.stub();

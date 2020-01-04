@@ -8,10 +8,10 @@ import * as sinon from 'sinon';
 import { Stats } from '@nodelib/fs.macchiato';
 import { DocumentLink } from 'vscode-languageclient';
 
-import { parseDocument, convertLinksToImports } from '../../services/parser';
-import * as helpers from '../helpers';
-import { NodeType } from '../../types/nodes';
-import { IImport } from '../../types/symbols';
+import { parseDocument, convertLinksToImports } from './parser';
+import * as helpers from '../test/helpers';
+import { NodeType } from '../types/nodes';
+import { IImport } from '../types/symbols';
 
 describe('Services/Parser', () => {
 	describe('.parseDocument', () => {

@@ -2,7 +2,7 @@
 
 import * as assert from 'assert';
 
-import { hasInFacts } from '../../utils/facts';
+import { hasInFacts } from './facts';
 
 describe('Utils/Facts', () => {
 	it('Contains', () => {
