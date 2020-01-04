@@ -128,9 +128,9 @@
 	},
 	"scripts": {
 		"clean": "rimraf out",
-		"lint": "tslint src/**/*.ts --project ./tsconfig.json",
+		"lint": "tslint \"src/**/*.ts\" -p . -t stylish",
 		"compile": "tsc",
-		"test": "mocha out/**/*.spec.js",
+		"test": "mocha \"out/**/*.spec.js\" -s 0",
 		"test:e2e": "node ./out/test/e2e/runTest.js",
 		"build": "npm run clean && npm run lint && npm run compile && npm test",
 		"watch": "npm run clean && npm run lint && tsc --watch"
