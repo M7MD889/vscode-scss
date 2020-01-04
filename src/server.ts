@@ -20,12 +20,18 @@ import { doHover } from './providers/hover';
 import { doSignatureHelp } from './providers/signatureHelp';
 import { goDefinition } from './providers/goDefinition';
 import { searchWorkspaceSymbol } from './providers/workspaceSymbol';
-import { findFiles } from './utils/fs';
+import Workspace from './workspace';
+import * as utils from './utils';
 
-let workspaceRoot: string;
-let settingsService: SettingsService;
-let storageService: StorageService;
-let scannerService: ScannerService;
+let workspace: Workspace;
+
+function findFiles(cwd: string, settings: SettingsService): Promise<string[]> {
+	return utils.fs.findFiles('**/*.scss', {
+		cwd,
+		deep: settings.scannerDepth,
+		ignore: settings.scannerExclude
+	});
+}
 
 // Create a connection for the server
 const connection: IConnection = createConnection(new IPCMessageReader(process), new IPCMessageWriter(process));
@@ -45,21 +51,24 @@ documents.listen(connection);
 // _in the passed params the rootPath of the workspace plus the client capabilites
 connection.onInitialize(
 	async (params: InitializeParams): Promise<InitializeResult> => {
-		workspaceRoot = params.rootPath;
-		settingsService = new SettingsService(params.initializationOptions.settings);
-		storageService = new StorageService();
-		scannerService = new ScannerService(storageService, settingsService);
+		const settings = new SettingsService(params.initializationOptions.settings);
+		const storage = new StorageService();
+		const scanner = new ScannerService(storage, settings);
 
-		const files = await findFiles('**/*.scss', {
-			cwd: params.rootPath,
-			deep: settingsService.scannerDepth,
-			ignore: settingsService.scannerExclude
+		workspace = new Workspace(params.rootUri, {
+			settings,
+			storage,
+			scanner
 		});
 
+		const workspaceFsPath = Files.uriToFilePath(workspace.uri);
+
 		try {
-			await scannerService.scan(files);
+			const files = await findFiles(workspaceFsPath, workspace.services.settings);
+
+			await workspace.services.scanner.scan(files);
 		} catch (error) {
-			if (settingsService.showErrors) {
+			if (workspace.services.settings.showErrors) {
 				connection.window.showErrorMessage(error);
 			}
 		}
@@ -80,45 +89,51 @@ connection.onInitialize(
 );
 
 connection.onDidChangeConfiguration(params => {
-	settingsService = new SettingsService(params.settings.scss);
+	const settings = new SettingsService(params.settings.scss);
+
+	workspace.setSettings(settings);
 });
 
 connection.onDidChangeWatchedFiles(event => {
 	const files = event.changes.map(file => Files.uriToFilePath(file.uri));
 
-	return scannerService.scan(files);
+	return workspace.services.scanner.scan(files);
 });
 
 connection.onCompletion(textDocumentPosition => {
 	const document = documents.get(textDocumentPosition.textDocument.uri);
 	const offset = document.offsetAt(textDocumentPosition.position);
-	return doCompletion(document, offset, settingsService, storageService);
+	return doCompletion(document, offset, workspace.services.settings, workspace.services.storage);
 });
 
 connection.onHover(textDocumentPosition => {
 	const document = documents.get(textDocumentPosition.textDocument.uri);
 	const offset = document.offsetAt(textDocumentPosition.position);
-	return doHover(document, offset, storageService);
+	return doHover(document, offset, workspace.services.storage);
 });
 
 connection.onSignatureHelp(textDocumentPosition => {
 	const document = documents.get(textDocumentPosition.textDocument.uri);
 	const offset = document.offsetAt(textDocumentPosition.position);
-	return doSignatureHelp(document, offset, storageService);
+	return doSignatureHelp(document, offset, workspace.services.storage);
 });
 
 connection.onDefinition(textDocumentPosition => {
 	const document = documents.get(textDocumentPosition.textDocument.uri);
 	const offset = document.offsetAt(textDocumentPosition.position);
-	return goDefinition(document, offset, storageService);
+	return goDefinition(document, offset, workspace.services.storage);
 });
 
 connection.onWorkspaceSymbol(workspaceSymbolParams => {
-	return searchWorkspaceSymbol(workspaceSymbolParams.query, storageService, workspaceRoot);
+	return searchWorkspaceSymbol(
+		workspaceSymbolParams.query,
+		workspace.services.storage,
+		Files.uriToFilePath(workspace.uri)
+	);
 });
 
 connection.onShutdown(() => {
-	storageService.clear();
+	workspace.services.storage.clear();
 });
 
 connection.listen();
